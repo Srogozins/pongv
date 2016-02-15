@@ -1,4 +1,3 @@
-
 extends Node2D
 
 var screen_size
@@ -8,7 +7,15 @@ func _ready():
 	screen_size = get_viewport_rect().size
 	pad_size = get_node("left_player").get_texture().get_size()
 	set_process(true)
+	set_process_input(true)
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
+func _input(ev):
+	# Mouse movement
+	if (ev.type==InputEvent.MOUSE_MOTION):
+		var right_pos = get_node("right_player").get_pos()
+		right_pos.y += ev.relative_y
+		get_node("right_player").set_pos(right_pos)
 
 # Ball speed px/sec
 var ball_speed = 150
