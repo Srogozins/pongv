@@ -14,6 +14,9 @@ var left_pad
 var right_pad
 var ball
 
+var left_score
+var right_score
+
 var p_ai_controller = null
 
 class LeftPadActions:
@@ -68,6 +71,9 @@ func _ready():
 	mouse_controlled = [right_pad]
 	p_ai_controller = PadAIController.new({left_pad: LeftPadActions})
 
+	left_score = get_node("scoreboard/left_score")
+	right_score = get_node("scoreboard/right_score")
+
 	set_process(true)
 	set_process_input(true)
 
@@ -103,7 +109,6 @@ func process_keys(delta):
 	if Input.is_action_pressed("right_move_down"):
 		process_pad_move(right_pad, PAD_SPEED*delta)
 
-
 func _process(delta):
 	var ball_pos = ball.get_pos()
 	var left_rect = Rect2(left_pad.get_pos() - pad_size/2, pad_size)
@@ -124,7 +129,14 @@ func _process(delta):
 			ball_direction = ball_direction.normalized()
 
 	# Wall collision
-	if (ball_pos.x < 0 or ball_pos.x > screen_size.x):
+	# TODO: Refactor ball reset
+	if (ball_pos.x < 0):
+		right_score.set_text(str(int(right_score.get_text()) +1))
+		ball_pos = screen_size * 0.5 # move to screen center
+		ball_speed = 150
+		ball_direction = Vector2(-1,0)
+	if (ball_pos.x > screen_size.x):
+		left_score.set_text(str(int(left_score.get_text()) +1))
 		ball_pos = screen_size * 0.5 # move to screen center
 		ball_speed = 150
 		ball_direction = Vector2(-1,0)
