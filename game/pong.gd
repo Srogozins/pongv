@@ -9,18 +9,64 @@ var ball_direction = START_BALL_DIRECTION
 var screen_size
 var pad_size
 var mouse_controlled
+
 var left_pad
 var right_pad
+var ball
 
+var p_ai_controller = null
+
+class LeftPadActions:
+	static func move_up():
+		if Input.is_action_pressed("left_move_up"):
+			Input.action_release("left_move_up")
+		if not Input.is_action_pressed("left_move_down"):
+			Input.action_press("left_move_down")
+
+	static func move_down():
+		if Input.is_action_pressed("left_move_down"):
+			Input.action_release("left_move_down")
+		if not Input.is_action_pressed("left_move_up"):
+			Input.action_press("left_move_up")
+
+class RightPadActions:
+	static func move_up():
+		if Input.is_action_pressed("right_move_up"):
+			Input.action_release("right_move_up")
+		if not Input.is_action_pressed("right_move_down"):
+			Input.action_press("right_move_down")
+
+	static func move_down():
+		if Input.is_action_pressed("right_move_down"):
+			Input.action_release("right_move_down")
+		if not Input.is_action_pressed("right_move_up"):
+			Input.action_press("right_move_up")
+
+
+class PadAIController:
+	var pads2actions = {}
+	func _init(p2a):
+		self.pads2actions = p2a
+
+	func update_pads(ball_pos, pad_size):
+		for p in pads2actions.keys():
+			var pad_rect = Rect2(p.get_pos() - pad_size/2, pad_size)
+			if pad_rect.end.y < ball_pos.y:
+				self.pads2actions[p].move_up()
+			elif pad_rect.pos.y > ball_pos.y:
+				self.pads2actions[p].move_down()
 
 func _ready():
-	screen_size = get_viewport_rect().size
-	pad_size = get_node("left_pad").get_texture().get_size() # TODO: Check sizes for pads individually
-
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	left_pad = get_node("left_pad")
 	right_pad = get_node("right_pad")
-	mouse_controlled = [left_pad, right_pad]
+	ball = get_node("ball")
+
+	screen_size = get_viewport_rect().size
+	pad_size = left_pad.get_texture().get_size() # TODO: Check sizes for pads individually
+
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	mouse_controlled = [right_pad]
+	p_ai_controller = PadAIController.new({left_pad: LeftPadActions})
 
 	set_process(true)
 	set_process_input(true)
@@ -57,10 +103,11 @@ func process_keys(delta):
 	if Input.is_action_pressed("right_move_down"):
 		process_pad_move(right_pad, PAD_SPEED*delta)
 
+
 func _process(delta):
-	var ball_pos = get_node("ball").get_pos()
-	var left_rect = Rect2(get_node("left_pad").get_pos() - pad_size/2, pad_size)
-	var right_rect = Rect2(get_node("right_pad").get_pos() - pad_size/2, pad_size)
+	var ball_pos = ball.get_pos()
+	var left_rect = Rect2(left_pad.get_pos() - pad_size/2, pad_size)
+	var right_rect = Rect2(right_pad.get_pos() - pad_size/2, pad_size)
 	ball_pos += ball_direction*ball_speed*delta
 	
 	# Floor/Ceiling collision
@@ -81,7 +128,7 @@ func _process(delta):
 		ball_pos = screen_size * 0.5 # move to screen center
 		ball_speed = 150
 		ball_direction = Vector2(-1,0)
-	
-	get_node("ball").set_pos(ball_pos)
+
+	ball.set_pos(ball_pos)
+	p_ai_controller.update_pads(ball_pos, pad_size)
 	process_keys(delta)
-	
