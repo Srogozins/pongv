@@ -4,6 +4,8 @@ const START_BALL_SPEED = 150
 const START_BALL_DIRECTION = Vector2(-1, 0)
 const PAD_SPEED = 300 # For digital controls
 
+var DEBUG_mouse_nocap = Globals.get("debug/mouse_nocap")
+
 var ball_speed = START_BALL_SPEED
 var ball_direction = START_BALL_DIRECTION
 var screen_size
@@ -67,7 +69,8 @@ func _ready():
 	screen_size = get_viewport_rect().size
 	pad_size = left_pad.get_texture().get_size() # TODO: Check sizes for pads individually
 
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if not DEBUG_mouse_nocap:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	mouse_controlled = [right_pad]
 	p_ai_controller = PadAIController.new({left_pad: LeftPadActions})
 
