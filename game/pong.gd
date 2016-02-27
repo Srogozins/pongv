@@ -6,8 +6,6 @@ const PAD_SPEED = 300 # For digital controls
 
 var DEBUG_mouse_nocap = Globals.get("debug/mouse_nocap")
 
-var ball_speed = START_BALL_SPEED
-var ball_direction = START_BALL_DIRECTION
 var screen_size
 var pad_size
 var mouse_controlled
@@ -61,13 +59,17 @@ class PadAIController:
 			elif pad_rect.pos.y > ball_pos.y:
 				self.pads2actions[p].move_down()
 
+func reset_ball(ball, screen_size):
+	ball.call_deferred("set_linear_velocity", START_BALL_SPEED * START_BALL_DIRECTION)
+	ball.call_deferred("set_pos",screen_size * 0.5) # move to screen center
+
 func _ready():
 	left_pad = get_node("left_pad")
 	right_pad = get_node("right_pad")
 	ball = get_node("ball")
 
 	screen_size = get_viewport_rect().size
-	pad_size = left_pad.get_texture().get_size() # TODO: Check sizes for pads individually
+	pad_size = get_node('left_pad/left_pad_spr').get_texture().get_size() # TODO: Check sizes for pads individually
 
 	if not DEBUG_mouse_nocap:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -77,7 +79,9 @@ func _ready():
 	left_score = get_node("scoreboard/left_score")
 	right_score = get_node("scoreboard/right_score")
 
-	set_process(true)
+	reset_ball(ball, screen_size)
+
+	set_fixed_process(true)
 	set_process_input(true)
 
 func process_pad_move(pad, delta_y):
@@ -100,7 +104,6 @@ func _input(ev):
 			pad_pos.y = clamp(pad_pos.y, 0, screen_size.y)
 			pad.set_pos(pad_pos)
 
-
 func process_keys(delta):
 	# Pad movement
 	if Input.is_action_pressed("left_move_up"):
@@ -112,38 +115,18 @@ func process_keys(delta):
 	if Input.is_action_pressed("right_move_down"):
 		process_pad_move(right_pad, PAD_SPEED*delta)
 
-func _process(delta):
+func _fixed_process(delta):
 	var ball_pos = ball.get_pos()
 	var left_rect = Rect2(left_pad.get_pos() - pad_size/2, pad_size)
 	var right_rect = Rect2(right_pad.get_pos() - pad_size/2, pad_size)
-	ball_pos += ball_direction*ball_speed*delta
-	
-	# Floor/Ceiling collision
-	if ( (ball_pos.y<0 and ball_direction.y <0)
-		or (ball_pos.y>screen_size.y and ball_direction.y>0)):
-			ball_direction.y = -ball_direction.y
-	
-	# Pad collision
-	if ((left_rect.has_point(ball_pos) and ball_direction.x < 0)
-		or (right_rect.has_point(ball_pos) and ball_direction.x > 0)):
-			ball_direction.x = -ball_direction.x
-			ball_speed *= 1.1
-			ball_direction.y = randf() * 2.0-1
-			ball_direction = ball_direction.normalized()
 
-	# Wall collision
-	# TODO: Refactor ball reset
-	if (ball_pos.x < 0):
-		right_score.set_text(str(int(right_score.get_text()) +1))
-		ball_pos = screen_size * 0.5 # move to screen center
-		ball_speed = 150
-		ball_direction = Vector2(-1,0)
-	if (ball_pos.x > screen_size.x):
-		left_score.set_text(str(int(left_score.get_text()) +1))
-		ball_pos = screen_size * 0.5 # move to screen center
-		ball_speed = 150
-		ball_direction = Vector2(-1,0)
-
-	ball.set_pos(ball_pos)
 	p_ai_controller.update_pads(ball_pos, pad_size)
 	process_keys(delta)
+
+func _on_ball_body_enter(body):
+	if body.get_name() == 'left_goal_wall':
+		right_score.set_text(str(int(right_score.get_text()) +1))
+		reset_ball(ball, screen_size)
+	elif body.get_name() == 'right_goal_wall':
+		left_score.set_text(str(int(left_score.get_text()) +1))
+		reset_ball(ball, screen_size)
