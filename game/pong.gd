@@ -85,9 +85,7 @@ func _ready():
 	set_process_input(true)
 
 func process_pad_move(pad, delta_y):
-	var pad_pos = pad.get_pos()
-	pad_pos.y = clamp(pad_pos.y + delta_y, 0, screen_size.y)
-	pad.set_pos(pad_pos)
+	pad.move(Vector2(0, delta_y))
 
 func process_pad_mode_up(pad, delta):
 	process_pad_move(pad, -PAD_SPEED*delta)
@@ -99,10 +97,7 @@ func _input(ev):
 	# Mouse-controlled movement
 	if (ev.type==InputEvent.MOUSE_MOTION):
 		for pad in mouse_controlled:
-			var pad_pos = pad.get_pos()
-			pad_pos.y += ev.relative_y
-			pad_pos.y = clamp(pad_pos.y, 0, screen_size.y)
-			pad.set_pos(pad_pos)
+			pad.move(Vector2(0, ev.relative_y))
 
 func process_keys(delta):
 	# Pad movement
