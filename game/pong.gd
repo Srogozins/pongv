@@ -3,6 +3,7 @@ extends Node2D
 const START_BALL_SPEED = 150
 const START_BALL_DIRECTION = Vector2(-1, 0)
 const PAD_SPEED = 300 # For digital controls
+const IMPULSE_LIMIT = 0.1
 
 var DEBUG_mouse_nocap = Globals.get("debug/mouse_nocap")
 
@@ -118,6 +119,12 @@ func _fixed_process(delta):
 	p_ai_controller.update_pads(ball_pos, pad_size)
 	process_keys(delta)
 
+func rebound_ball_with_pad(ball, pad, rebound_dir):
+	var y_impulse = pad.get_travel().y
+	var x_impulse = abs(y_impulse) * rebound_dir
+	var impulse_v = Vector2(clamp(x_impulse, -IMPULSE_LIMIT, IMPULSE_LIMIT), clamp(y_impulse, -IMPULSE_LIMIT, IMPULSE_LIMIT))
+	ball.apply_impulse(pad.get_pos(), impulse_v)
+
 func _on_ball_body_enter(body):
 	if body.get_name() == 'left_goal_wall':
 		right_score.set_text(str(int(right_score.get_text()) +1))
@@ -125,3 +132,7 @@ func _on_ball_body_enter(body):
 	elif body.get_name() == 'right_goal_wall':
 		left_score.set_text(str(int(left_score.get_text()) +1))
 		reset_ball(ball, screen_size)
+	elif body.get_name() == 'right_pad':
+		rebound_ball_with_pad(ball, right_pad, -1)
+	elif body.get_name() == 'left_pad':
+		rebound_ball_with_pad(ball, right_pad, 1)
