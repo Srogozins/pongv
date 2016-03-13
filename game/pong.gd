@@ -19,6 +19,7 @@ var left_score
 var right_score
 
 var p_ai_controller = null
+var swalls = load('levels/test/short_lived_spawned_walls.tscn')
 
 class LeftPadActions:
 	static func move_up():
@@ -60,6 +61,7 @@ class PadAIController:
 			elif pad_rect.pos.y > ball_pos.y:
 				self.pads2actions[p].move_down()
 
+
 func reset_ball(ball, screen_size):
 	ball.call_deferred("set_linear_velocity", START_BALL_SPEED * START_BALL_DIRECTION)
 	ball.call_deferred("set_pos",screen_size * 0.5) # move to screen center
@@ -94,11 +96,25 @@ func process_pad_mode_up(pad, delta):
 func process_pad_mode_down(pad, delta):
 	process_pad_move(pad, PAD_SPEED*delta)
 
+func toggle_check(ev):
+	return ev.is_pressed() and not ev.is_echo()
+
+func spawn_walls(pos_v, id):
+	if not has_node("spawned_walls_" + id):
+		var swalls_i = swalls.instance()
+		swalls_i.set_name("spawned_walls_" + id)
+		swalls_i.set_pos(pos_v)
+		add_child(swalls_i)
+
 func _input(ev):
 	# Mouse-controlled movement
 	if (ev.type==InputEvent.MOUSE_MOTION):
 		for pad in mouse_controlled:
 			pad.move(Vector2(0, ev.relative_y))
+	elif(ev.is_action("left_special_1") and toggle_check(ev)):
+		spawn_walls(Vector2(320-80, left_pad.get_pos().y), 'left')
+	elif(ev.is_action("right_special_1") and toggle_check(ev)):
+		spawn_walls(Vector2(320+80, right_pad.get_pos().y), 'right')
 
 func process_keys(delta):
 	# Pad movement
