@@ -133,6 +133,6 @@ func _on_ball_body_enter(body):
 		left_score.set_text(str(int(left_score.get_text()) +1))
 		reset_ball(ball, screen_size)
 	elif body.get_name() == 'right_pad':
-		rebound_ball_with_pad(ball, right_pad, -1)
+		rebound_ball_with_pad(ball, body, -1)
 	elif body.get_name() == 'left_pad':
-		rebound_ball_with_pad(ball, right_pad, 1)
+		rebound_ball_with_pad(ball, body, 1)
