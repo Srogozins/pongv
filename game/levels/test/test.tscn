@@ -163,7 +163,7 @@ shape = SubResource( 16 )
 trigger = true
 _update_shape_index = 0
 
-[node name="right_pad" type="KinematicBody2D" parent="."]
+[node name="right_pad" type="KinematicBody2D" parent="." groups=[ "mouse_controlled_pads" ]]
 
 transform/pos = Vector2( 540, 196 )
 input/pickable = false

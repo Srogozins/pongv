@@ -7,18 +7,19 @@ const IMPULSE_LIMIT = 0.1
 
 var DEBUG_mouse_nocap = Globals.get("debug/mouse_nocap")
 
-var screen_size
-var pad_size
-var mouse_controlled
+onready var tree = get_tree()
 
-var left_pad
-var right_pad
-var ball
+onready var screen_size = get_viewport_rect().size
 
-var left_score
-var right_score
+onready var left_pad = get_node("left_pad")
+onready var right_pad = get_node("right_pad")
+onready var ball = get_node("ball")
+onready var pad_size = left_pad.get_node('left_pad_spr').get_texture().get_size() # TODO: Check sizes for pads individually
 
-var p_ai_controller = null
+onready var left_score = get_node("scoreboard/left_score")
+onready var right_score = get_node("scoreboard/right_score")
+
+onready var p_ai_controller = PadAIController.new({left_pad: LeftPadActions})
 var swalls = load('levels/test/short_lived_spawned_walls.tscn')
 
 class LeftPadActions:
@@ -47,7 +48,6 @@ class RightPadActions:
 		if not Input.is_action_pressed("right_move_up"):
 			Input.action_press("right_move_up")
 
-
 class PadAIController:
 	var pads2actions = {}
 	func _init(p2a):
@@ -61,29 +61,14 @@ class PadAIController:
 			elif pad_rect.pos.y > ball_pos.y:
 				self.pads2actions[p].move_down()
 
-
 func reset_ball(ball, screen_size):
 	ball.call_deferred("set_linear_velocity", START_BALL_SPEED * START_BALL_DIRECTION)
 	ball.call_deferred("set_pos",screen_size * 0.5) # move to screen center
 
 func _ready():
-	left_pad = get_node("left_pad")
-	right_pad = get_node("right_pad")
-	ball = get_node("ball")
-
-	screen_size = get_viewport_rect().size
-	pad_size = get_node('left_pad/left_pad_spr').get_texture().get_size() # TODO: Check sizes for pads individually
-
 	if not DEBUG_mouse_nocap:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	mouse_controlled = [right_pad]
-	p_ai_controller = PadAIController.new({left_pad: LeftPadActions})
-
-	left_score = get_node("scoreboard/left_score")
-	right_score = get_node("scoreboard/right_score")
-
 	reset_ball(ball, screen_size)
-
 	set_fixed_process(true)
 	set_process_input(true)
 
@@ -109,8 +94,8 @@ func spawn_walls(pos_v, id):
 func _input(ev):
 	# Mouse-controlled movement
 	if (ev.type==InputEvent.MOUSE_MOTION):
-		for pad in mouse_controlled:
-			pad.move(Vector2(0, ev.relative_y))
+		var move_v = Vector2(0, ev.relative_y)
+		tree.call_group(0, "mouse_controlled_pads", "move", move_v)
 	elif(ev.is_action("left_special_1") and toggle_check(ev)):
 		spawn_walls(Vector2(320-80, left_pad.get_pos().y), 'left')
 	elif(ev.is_action("right_special_1") and toggle_check(ev)):
