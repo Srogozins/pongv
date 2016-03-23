@@ -1,7 +1,5 @@
 extends Node2D
 
-const START_BALL_SPEED = 150
-const START_BALL_DIRECTION = Vector2(-1, 0)
 const PAD_SPEED = 300 # For digital controls
 const IMPULSE_LIMIT = 0.1
 
@@ -13,14 +11,14 @@ onready var screen_size = get_viewport_rect().size
 
 onready var left_pad = get_node("left_pad")
 onready var right_pad = get_node("right_pad")
-onready var ball = get_node("ball")
-onready var pad_size = left_pad.get_node('left_pad_spr').get_texture().get_size() # TODO: Check sizes for pads individually
+onready var ball = null
+onready var pad_size = left_pad.get_node('pad_sprite').get_texture().get_size() # TODO: Check sizes for pads individually
 
-onready var left_score = get_node("scoreboard/left_score")
-onready var right_score = get_node("scoreboard/right_score")
+onready var scoreboard = get_node("scoreboard")
 
 onready var p_ai_controller = PadAIController.new({left_pad: LeftPadActions})
 var swalls = load('levels/test/short_lived_spawned_walls.tscn')
+onready var ball_spawner = get_node("ball_spawner")
 
 class LeftPadActions:
 	static func move_up():
@@ -61,14 +59,10 @@ class PadAIController:
 			elif pad_rect.pos.y > ball_pos.y:
 				self.pads2actions[p].move_down()
 
-func reset_ball(ball, screen_size):
-	ball.call_deferred("set_linear_velocity", START_BALL_SPEED * START_BALL_DIRECTION)
-	ball.call_deferred("set_pos",screen_size * 0.5) # move to screen center
-
 func _ready():
 	if not DEBUG_mouse_nocap:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	reset_ball(ball, screen_size)
+	ball_spawner.spawn_ball()
 	set_fixed_process(true)
 	set_process_input(true)
 
@@ -113,7 +107,8 @@ func process_keys(delta):
 		process_pad_move(right_pad, PAD_SPEED*delta)
 
 func _fixed_process(delta):
-	var ball_pos = ball.get_pos()
+	var ball_pos = tree.get_nodes_in_group("balls")[0].get_pos() + ball_spawner.get_pos()
+
 	var left_rect = Rect2(left_pad.get_pos() - pad_size/2, pad_size)
 	var right_rect = Rect2(right_pad.get_pos() - pad_size/2, pad_size)
 
@@ -126,14 +121,14 @@ func rebound_ball_with_pad(ball, pad, rebound_dir):
 	var impulse_v = Vector2(clamp(x_impulse, -IMPULSE_LIMIT, IMPULSE_LIMIT), clamp(y_impulse, -IMPULSE_LIMIT, IMPULSE_LIMIT))
 	ball.apply_impulse(pad.get_pos(), impulse_v)
 
-func _on_ball_body_enter(body):
+func _on_ball_body_enter(body, ball):
 	if body.get_name() == 'left_goal_wall':
-		right_score.set_text(str(int(right_score.get_text()) +1))
-		reset_ball(ball, screen_size)
+		scoreboard.increment_right_score()
+		ball.queue_free()
+		ball_spawner.spawn_ball()
 	elif body.get_name() == 'right_goal_wall':
-		left_score.set_text(str(int(left_score.get_text()) +1))
-		reset_ball(ball, screen_size)
-	elif body.get_name() == 'right_pad':
-		rebound_ball_with_pad(ball, body, -1)
-	elif body.get_name() == 'left_pad':
-		rebound_ball_with_pad(ball, body, 1)
+		scoreboard.increment_left_score()
+		ball.queue_free()
+		ball_spawner.spawn_ball()
+	elif body.is_in_group("pads"):
+		rebound_ball_with_pad(ball, body, bool(body.get_pos().x < ball.get_pos().x))

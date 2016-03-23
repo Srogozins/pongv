@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://levels/test/scoreboard.gd" type="Script" id=1]
+
+[node name="scoreboard" type="Node2D"]
+
+script/script = ExtResource( 1 )
+
+[node name="left_score" type="Label" parent="."]
+
+margin/left = -45.0
+margin/top = -30.0
+margin/right = -38.0
+margin/bottom = -17.0
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+text = "0"
+align = 2
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="right_score" type="Label" parent="."]
+
+margin/left = 15.0
+margin/top = -30.0
+margin/right = 22.0
+margin/bottom = -17.0
+focus/ignore_mouse = true
+focus/stop_mouse = true
+size_flags/horizontal = 2
+text = "0"
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+
