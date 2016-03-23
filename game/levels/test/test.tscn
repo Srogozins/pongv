@@ -6,30 +6,30 @@
 [ext_resource path="res://textures/left_pallete.tex" type="Texture" id=4]
 [ext_resource path="res://textures/ball.tex" type="Texture" id=5]
 
-[sub_resource type="SegmentShape2D" id=17]
+[sub_resource type="SegmentShape2D" id=1]
 
 custom_solver_bias = 0.0
 a = Vector2( -30.768, -53.4667 )
 b = Vector2( 30.672, -53.4667 )
 
-[sub_resource type="SegmentShape2D" id=18]
+[sub_resource type="SegmentShape2D" id=2]
 
 custom_solver_bias = 0.0
 a = Vector2( -30.768, 53.2 )
 b = Vector2( 30.672, 53.2 )
 
-[sub_resource type="LineShape2D" id=16]
+[sub_resource type="LineShape2D" id=3]
 
 custom_solver_bias = 0.0
 normal = Vector2( 0, -1 )
 d = 0.0
 
-[sub_resource type="RectangleShape2D" id=13]
+[sub_resource type="RectangleShape2D" id=4]
 
 custom_solver_bias = 0.0
 extents = Vector2( 10, 10 )
 
-[sub_resource type="CircleShape2D" id=11]
+[sub_resource type="CircleShape2D" id=5]
 
 custom_solver_bias = 0.0
 radius = 5.0
@@ -90,11 +90,11 @@ max_lines_visible = -1
 
 transform/pos = Vector2( 319.5, 200.5 )
 input/pickable = false
-shapes/0/shape = SubResource( 17 )
-shapes/0/transform = Matrix32( 10.4167, -0, 0, 3.75, 0, 0 )
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Matrix32( 10.4167, 0, 0, 3.75, 0, 0 )
 shapes/0/trigger = false
-shapes/1/shape = SubResource( 18 )
-shapes/1/transform = Matrix32( 10.4167, -0, 0, 3.75, 0, 0 )
+shapes/1/shape = SubResource( 2 )
+shapes/1/transform = Matrix32( 10.4167, 0, 0, 3.75, 0, 0 )
 shapes/1/trigger = false
 collision/layers = 1
 collision/mask = 1
@@ -106,14 +106,14 @@ bounce = 0.0
 [node name="top_wall" type="CollisionShape2D" parent="blocking_walls"]
 
 transform/scale = Vector2( 10.4167, 3.75 )
-shape = SubResource( 17 )
+shape = SubResource( 1 )
 trigger = false
 _update_shape_index = 0
 
 [node name="bottom_wall" type="CollisionShape2D" parent="blocking_walls"]
 
 transform/scale = Vector2( 10.4167, 3.75 )
-shape = SubResource( 18 )
+shape = SubResource( 2 )
 trigger = false
 _update_shape_index = 1
 
@@ -121,7 +121,7 @@ _update_shape_index = 1
 
 transform/pos = Vector2( 320, 200 )
 input/pickable = false
-shapes/0/shape = SubResource( 16 )
+shapes/0/shape = SubResource( 3 )
 shapes/0/transform = Matrix32( -8.74228e-08, 2, -1, -4.37114e-08, -321, 0 )
 shapes/0/trigger = true
 collision/layers = 1
@@ -136,7 +136,7 @@ bounce = 0.0
 transform/pos = Vector2( -321, 0 )
 transform/rot = -90.0
 transform/scale = Vector2( 2, 1 )
-shape = SubResource( 16 )
+shape = SubResource( 3 )
 trigger = true
 _update_shape_index = 0
 
@@ -144,7 +144,7 @@ _update_shape_index = 0
 
 transform/pos = Vector2( 320, 200 )
 input/pickable = false
-shapes/0/shape = SubResource( 16 )
+shapes/0/shape = SubResource( 3 )
 shapes/0/transform = Matrix32( -8.74228e-08, -2, 1, -4.37114e-08, 320, 0 )
 shapes/0/trigger = true
 collision/layers = 1
@@ -159,7 +159,7 @@ bounce = 0.0
 transform/pos = Vector2( 320, 0 )
 transform/rot = 90.0
 transform/scale = Vector2( 2, 1 )
-shape = SubResource( 16 )
+shape = SubResource( 3 )
 trigger = true
 _update_shape_index = 0
 
@@ -167,8 +167,8 @@ _update_shape_index = 0
 
 transform/pos = Vector2( 540, 196 )
 input/pickable = false
-shapes/0/shape = SubResource( 13 )
-shapes/0/transform = Matrix32( 0.45, -0, 0, 1.7, 0, 0 )
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Matrix32( 0.45, 0, 0, 1.7, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
 collision/mask = 1
@@ -181,7 +181,7 @@ texture = ExtResource( 3 )
 [node name="right_pad_col" type="CollisionShape2D" parent="right_pad"]
 
 transform/scale = Vector2( 0.45, 1.7 )
-shape = SubResource( 13 )
+shape = SubResource( 4 )
 trigger = false
 _update_shape_index = 0
 
@@ -189,7 +189,7 @@ _update_shape_index = 0
 
 transform/pos = Vector2( 100, 196 )
 input/pickable = false
-shapes/0/shape = SubResource( 13 )
+shapes/0/shape = SubResource( 4 )
 shapes/0/transform = Matrix32( 0.45, 0, 0, 1.7, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
@@ -199,7 +199,7 @@ collision/margin = 0.08
 [node name="left_pad_col" type="CollisionShape2D" parent="left_pad"]
 
 transform/scale = Vector2( 0.45, 1.7 )
-shape = SubResource( 13 )
+shape = SubResource( 4 )
 trigger = false
 _update_shape_index = 0
 
@@ -211,8 +211,8 @@ texture = ExtResource( 4 )
 
 transform/pos = Vector2( 319.5, 200.5 )
 input/pickable = false
-shapes/0/shape = SubResource( 11 )
-shapes/0/transform = Matrix32( 1, -0, 0, 1, 0, 0 )
+shapes/0/shape = SubResource( 5 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
 collision/mask = 1
@@ -237,7 +237,7 @@ __meta__ = { "_edit_group_":true }
 
 visibility/self_opacity = 0.99
 visibility/behind_parent = true
-shape = SubResource( 11 )
+shape = SubResource( 5 )
 trigger = false
 _update_shape_index = 0
 
