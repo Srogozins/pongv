@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=1]
+
+[ext_resource path="res://levels/test/player.gd" type="Script" id=1]
+
+[node name="player" type="Node2D"]
+
+script/script = ExtResource( 1 )
+PAD_SPEED = 300
+MOVE_UP_ACTION = "right_move_up"
+MOVE_DOWN_ACTION = "right_move_down"
+SPECIAL_1_ACTION = "right_special_1"
+MOUSE_CONTROLLED = false
+SWALL_SPAWN_X = 400
+
+
