@@ -9,3 +9,10 @@ func spawn_ball():
 	ball.connect("body_enter", get_parent(), "_on_ball_body_enter", [ball])
 	ball.call_deferred("set_linear_velocity", START_BALL_SPEED * START_BALL_DIRECTION)
 	add_child(ball)
+
+func get_balls():
+	var balls = []
+	for child in get_children():
+		if child.is_in_group("balls"):
+			balls.append(child)
+	return balls

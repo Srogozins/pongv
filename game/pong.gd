@@ -6,8 +6,6 @@ onready var SCREEN_SIZE = get_viewport_rect().size
 
 onready var DEBUG_MOUSE_NOCAP = Globals.get("debug/mouse_nocap")
 
-onready var tree = get_tree()
-
 onready var left_player = get_node("left_player")
 onready var right_player = get_node("right_player")
 onready var left_pad = left_player.get_pads()[0]
@@ -41,7 +39,7 @@ func _ready():
 	set_process_input(true)
 
 func _fixed_process(delta):
-	var ball_pos = tree.get_nodes_in_group("balls")[0].get_pos() + ball_spawner.get_pos()
+	var ball_pos = ball_spawner.get_balls()[0].get_global_pos()
 	p_ai_controller.update_pads(ball_pos, pad_size)
 
 func rebound_ball_with_pad(ball, pad, rebound_dir):
