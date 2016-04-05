@@ -7,7 +7,7 @@ export(String, "right_special_1", "left_special_1") var SPECIAL_1_ACTION
 export(bool) var MOUSE_CONTROLLED
 export(int) var SWALL_SPAWN_X
 
-var swalls = load('levels/test/short_lived_spawned_walls.tscn')
+onready var swalls = autoload.s_walls
 
 func _ready():
 	set_process_input(true)
